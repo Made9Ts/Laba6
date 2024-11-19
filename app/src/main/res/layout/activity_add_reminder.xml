@@ -5,33 +5,32 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/etTitle"
+        android:id="@+id/editTextTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Заголовок"
-        android:textColor="@android:color/black"
-        android:textColorHint="@android:color/darker_gray" />
-
-    <EditText
-        android:id="@+id/etText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Текст"
         android:minHeight="48dp"
         android:textColor="@android:color/black"
-        android:textColorHint="@android:color/darker_gray" />
+        android:textColorHint="@android:color/darker_gray"/>
+
+    <EditText
+        android:id="@+id/editTextText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Описание"
+        android:minHeight="48dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"/>
 
     <Button
         android:id="@+id/btnSetDateTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Установить дату и время"
-        android:textColor="#FFFFFF" />
+        android:text="Выбрать дату и время" />
 
     <Button
-        android:id="@+id/btnSave"
+        android:id="@+id/btnSaveReminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Сохранить"
-        android:textColor="#FFFFFF" />
+        android:text="Сохранить напоминание" />
 </LinearLayout>

@@ -7,29 +7,30 @@
 
     <TextView
         android:id="@+id/tvReminderTitle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:textSize="18sp"/>
+        android:textColor="@color/purple_700"/>
 
     <TextView
         android:id="@+id/tvReminderText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"/>
+        android:textSize="16sp"
+        android:textColor="@color/purple_700"/>
 
     <TextView
         android:id="@+id/tvReminderDateTime"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textColor="@android:color/darker_gray"/>
+        android:textSize="14sp"
+        android:textColor="@color/purple_700"/>/>
 
     <ImageButton
         android:id="@+id/btnDeleteReminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_delete"
-        android:contentDescription="Удалить напоминание"
-        android:layout_gravity="end"/>
+        android:contentDescription="Удалить напоминание" />
 </LinearLayout>

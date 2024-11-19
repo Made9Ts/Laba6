@@ -1,12 +1,17 @@
 package com.example.laba6;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.AppOpsManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -29,8 +34,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int ADD_REMINDER_REQUEST = 1;
-    private static final String CHANNEL_ID = "REMINDER_CHANNEL";
+    public static final String CHANNEL_ID = "REMINDER_CHANNEL";
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 100;
+    private static final int EXACT_ALARM_PERMISSION_REQUEST_CODE = 101; // Код запроса для разрешения на точные будильники
     private DatabaseHelper dbHelper;
     private ReminderAdapter reminderAdapter;
     private List<Reminder> reminderList;
@@ -108,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
             long reminderId = dbHelper.addReminder(reminder);
             reminder.setReminderId(reminderId);
 
-            // Отправка уведомления
-            sendNotification(reminder);
+            // Запланировать уведомление
+            scheduleNotification(reminder);
 
             // Обновление списка
             loadReminders();
@@ -120,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         // Очистка текущего списка и загрузка напоминаний из БД
         reminderList.clear();
         reminderList.addAll(dbHelper.getAllReminders());
-        reminderAdapter.notifyDataSetChanged(); // Исправлено
+        reminderAdapter.notifyDataSetChanged();
     }
 
     private void createNotificationChannel() {
@@ -143,32 +149,48 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void scheduleNotification(Reminder reminder) {
+        if (canScheduleExactAlarms()) {
+            Intent intent = new Intent(this, NotificationReceiver.class);
+            intent.putExtra("title", reminder.getTitle());
+            intent.putExtra("text", reminder.getText());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) reminder.getReminderId(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (alarmManager != null) {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder.getDateTime(), pendingIntent);
+            }
+        } else {
+            requestExactAlarmPermission();
+        }
+    }
+
+    private boolean canScheduleExactAlarms() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            return appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_READ_CALL_LOG, getApplicationInfo().uid, getPackageName()) == AppOpsManager.MODE_ALLOWED;
+        }
+        return true; // Для версий ниже Android 12 разрешение предоставляется по умолчанию
+    }
+
+    private void requestExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!canScheduleExactAlarms()) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Разрешение на уведомления предоставлено", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Разрешение на уведомления отклонено", Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-    private void sendNotification(Reminder reminder) {
-        // Проверка разрешения на отправку уведомлений
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_notification)
-                    .setContentTitle(reminder.getTitle())
-                    .setContentText(reminder.getText())
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify((int) reminder.getReminderId(), builder.build());
-        } else {
-            // Если разрешение не предоставлено, запросите его
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_REQUEST_CODE);
         }
     }
 }
