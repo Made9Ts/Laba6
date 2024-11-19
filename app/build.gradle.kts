@@ -4,11 +4,11 @@ plugins {
 
 android {
     namespace = "com.example.laba6"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.laba6"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    implementation (libs.core)
     implementation (libs.appcompat.v161)
     implementation (libs.material.v190)
     implementation (libs.constraintlayout.v214)
