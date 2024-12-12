@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Таблица напоминаний
     private static final String TABLE_REMINDERS = "reminders";
-    private static final String COLUMN_ID = "reminderId"; // Изменено название столбца
+    private static final String COLUMN_ID = "reminderId";
     private static final String COLUMN_TITLE = "title";
     private static final String COLUMN_TEXT = "text";
     private static final String COLUMN_DATETIME = "datetime";

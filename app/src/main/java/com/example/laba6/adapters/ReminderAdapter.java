@@ -87,10 +87,4 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         }
     }
 
-    // Методы для обновления списка
-    public void updateReminders(List<Reminder> newReminders) {
-        this.reminderList.clear();
-        this.reminderList.addAll(newReminders);
-        notifyDataSetChanged();
-    }
 }

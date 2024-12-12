@@ -20,8 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int ADD_REMINDER_REQUEST = 1;
     public static final String CHANNEL_ID = "REMINDER_CHANNEL";
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 100;
-    private static final int EXACT_ALARM_PERMISSION_REQUEST_CODE = 101; // Код запроса для разрешения на точные будильники
     private DatabaseHelper dbHelper;
     private ReminderAdapter reminderAdapter;
     private List<Reminder> reminderList;
@@ -170,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
             return appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_READ_CALL_LOG, getApplicationInfo().uid, getPackageName()) == AppOpsManager.MODE_ALLOWED;
         }
-        return true; // Для версий ниже Android 12 разрешение предоставляется по умолчанию
+        return true;
     }
 
     private void requestExactAlarmPermission() {
